@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>JS Drum Kit</title>
+  <link rel="stylesheet" href="style.css">
+  <script src=" https://npmcdn.com/vue/dist/vue.js"></script>
+</head>
+
+<body>
+
+  <div id="app">
+
+    <div class="keys">
+      <template v-for="keymap in keymaps">
+        <div v-bind:data-key="keymap.keyCode" class="key" v-bind:class="toggleClass(keymap)" v-on:transitionend="removeTransition($event, keymap)">
+          <kbd>{{ keymap.keyboard }}</kbd>
+          <span class="sound ">{{ keymap.soundName }}</span>
+        </div>
+      </template>
+    </div>
+
+    <template v-for="(name, index) in keymaps">
+      <audio v-bind:data-key="name.keyCode" v-bind:src="soundUrl(index)">
+      </audio>
+    </template>
+
+  </div>
+
+
+  <script>
+    var drumKit = new Vue({
+      el: '#app',
+      data: {
+        keymaps: [{
+            keyboard: "A",
+            keyCode: 65,
+            soundName: "clap",
+            isPlaying: false
+          },
+          {
+            keyboard: "S",
+            keyCode: 83,
+            soundName: "hihat",
+            isPlaying: false
+          },
+          {
+            keyboard: "D",
+            keyCode: 68,
+            soundName: "kick",
+            isPlaying: false
+          },
+          {
+            keyboard: "F",
+            keyCode: 70,
+            soundName: "openhat",
+            isPlaying: false
+          },
+          {
+            keyboard: "G",
+            keyCode: 71,
+            soundName: "boom",
+            isPlaying: false
+          },
+          {
+            keyboard: "H",
+            keyCode: 72,
+            soundName: "ride",
+            isPlaying: false
+          },
+          {
+            keyboard: "J",
+            keyCode: 74,
+            soundName: "snare",
+            isPlaying: false
+          },
+          {
+            keyboard: "K",
+            keyCode: 75,
+            soundName: "tom",
+            isPlaying: false
+          },
+          {
+            keyboard: "L",
+            keyCode: 76,
+            soundName: "tink",
+            isPlaying: false
+          }
+        ]
+      },
+
+      methods: {
+        soundUrl: function (i) {
+          return "sounds/" + this.keymaps[i].soundName + ".wav"
+        },
+        removeTransition: (e, i) => {
+          if (e.propertyName !== 'transform') return; // skip it if it's not a transform 
+          // e.target.classList.remove('playing');
+          i.isPlaying = false;
+        },
+        playSound: function (e) {
+          const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`); // find the first matching audio element
+          if (!audio) return;
+          audio.currentTime = 0;
+          audio.play();
+
+          const key = this.keymaps.find(keymap => keymap.keyCode === e.keyCode);
+          key.isPlaying = true;
+        },
+        toggleClass: function (i) {
+          return {
+            'playing': i.isPlaying
+          }
+        }
+      },
+      mounted() {
+        // window.addEventListener("keydown", function (e) {
+        //   const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`); // find the first matching audio element 
+        //   const key = document.querySelector(`.key[data-key="${e.keyCode}"]`); // find the first matching key element 
+        //   if (!audio) {
+        //     return; //stop the function from running all together 
+        //   }
+        //   audio.currentTime = 0; // rewind to the start 
+        //   audio.play();
+        //   key.classList.add('playing');
+        //   console.log(this);
+        // }.bind(this));
+
+        window.addEventListener('keydown', this.playSound);
+
+      }
+    });
+  </script>
+
+
+</body>
+
+</html>
+
+<!-- /*Notes to myself: https://davefollett.io/2018/08/01/a-new-vue-on-javascript30-01-javascript-drum-kit/ 1.Create an array
+of objects called keymaps with the properties: soundName, keyCode, keyboard, isPlaying 1.output html structure in the template
+using v-for and data object keyMaps 2. add eventlistener to each mapped keyed press 3. on keydown, call playSound function
+that checks if there is matching keycode. If there is matching keycode, select matching audio element to play audio and set
+isPlaying flag inside that object to true 4. create toggleClass function that takes in keymap object that toggles 'playing'
+class based on the keymap.isPlaying flag 5. remove 'playing' class using removeTransition function which listens for transitionend
+event on the element and then setting keymap.isPlaying to false How to access the event object in the template use $event
+https://vuejs.org/v2/guide/events.html can use e in a named callback function even if it is not passed into the function
+when calling it function name(e){} el.addeventhandler('click',name); Problems always check what is 'this' accessing the specific
+object matching the keydown in the array- specifically writing the toggleClass as a function in methods in the Vue instance
+rather than using v-bind:class="{playing:isPlaying"} for scalability https://vuejs.org/v2/guide/class-and-style.html conditional
+class binding https://forum.vuejs.org/t/capture-keypress-for-all-keys/14560*/ -->
