@@ -23,12 +23,125 @@
       <input type="text" name="item" placeholder="Item Name" required>
       <input type="submit" value="+ Add Item">
     </form>
+    <!-- uncheck all button -->
+    <button type="button" class="btn-clear-all">Clear all</button>
+    <!-- check all button -->
+    <button type="button" class="btn-check-all">Check all</button>
   </div>
 
 <script>
   const addItems = document.querySelector('.add-items');
   const itemsList = document.querySelector('.plates');
-  const items = [];
+  const clearBtn = document.querySelector('.btn-clear-all');
+  const checkAllBtn = document.querySelector('.btn-check-all');
+  const items = JSON.parse(localStorage.getItem('items')) || [];
+
+  function addItem(e) {
+    // prevent page from reloading
+    e.preventDefault();
+
+    // take the text entered and put it into the object
+    // this is the form element
+    const text = (this.querySelector('[name=item]')).value;
+    const item = {
+      text: text,
+      done: false //by default, mot going to be checked
+    }
+
+    // push input into items array
+    items.push(item);
+
+    // visually update what is on the page
+    populateList(items, itemsList);
+
+    // set the items array into localStorage
+    // localStorage only accepts string
+    localStorage.setItem('items', JSON.stringify(items));
+
+    // clear the input
+    // this is the form element
+    // form element has a method called reset
+    this.reset();
+
+  }
+
+  // create the actual html
+  // every time it populates, it is recreating the entire list
+  // fix: react/angular
+  function populateList(plates = [], platesList) {
+    platesList.innerHTML = plates.map((plate, i) => {
+      return `
+        <li>
+          <input type="checkbox" data-index=${i} id="item${i}" ${plate.done ? 'checked' : ''} />
+          <label for="item${i}">${plate.text}</label>
+        </li>
+      `;
+    }).join('');
+  }
+
+  // remember the toggle state
+  function toggleDone(e) {
+    if(!e.target.matches('input')) return; // skip this unless it's and input
+
+    // change the property
+    const el = e.target;
+    const index = el.dataset.index;
+    items[index].done = !items[index].done;
+
+    // store that in localStorage
+    localStorage.setItem('items', JSON.stringify(items));
+
+    // visually update what is on the page
+    populateList(items, itemsList); 
+  }
+
+  // clear all checkboxes on click
+  function clearAll(e){
+
+    // change property to false
+    items.forEach((item) => {
+      item.done = false;
+    });
+
+    // uncheck checkboxes visually
+    // convert nodeList to array
+    const checkboxes = [...itemsList.querySelectorAll('input')];
+    checkboxes.forEach((checkbox) => {
+      checkbox.removeAttribute('checked')
+    });
+
+    // store that in localStorage
+    localStorage.setItem('items', JSON.stringify(items));
+  }
+
+  // check all checkboxes on click
+  function checkAll(e) {
+    // change property to true
+    items.forEach((item) => {
+      item.done = true;
+    });
+
+    // uncheck checkboxes visually
+    // convert nodeList to array
+    const checkboxes = [...itemsList.querySelectorAll('input')];
+    checkboxes.forEach((checkbox) => {
+      checkbox.setAttribute('checked', '');
+    });
+
+    // store that in localStorage
+    localStorage.setItem('items', JSON.stringify(items));
+  }
+
+  // submit event covers all bases - someone hits enter, clicks button, some external thing submit it
+  addItems.addEventListener('submit', addItem);
+
+  itemsList.addEventListener('click', toggleDone);
+
+  clearBtn.addEventListener('click', clearAll);
+  checkAllBtn.addEventListener('click', checkAll);
+
+  // when the page loads, populate list
+  populateList(items, itemsList);
 
 </script>
 
