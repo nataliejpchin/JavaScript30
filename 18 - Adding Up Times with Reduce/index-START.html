@@ -182,6 +182,36 @@
     </li>
   </ul>
 <script>
+  // point to list items and convert NodeList into array
+  const listItems = [...document.querySelectorAll('li')];
+  // console.dir(listItems);
+
+  // calculate total video duration with initial value as 0
+  const sum = listItems.reduce(function(accumulator, listItem){
+    // split video time code into minutes and seconds array
+    // convert string to integer
+    // console.log(typeof listItem.dataset.time);
+    const [mins, secs] = listItem.dataset.time.split(':').map(parseFloat);
+    // console.log(mins, secs);
+
+    // calculate time in seconds
+    // convert minutes to seconds
+    const seconds = (mins * 60) + secs;
+    // console.log(seconds);
+
+    return accumulator + seconds;
+  }, 0);
+
+  // convert total video duration into hours, minutes and seconds
+  let secondsLeft = sum;
+  const hours = Math.floor(secondsLeft / 3600);
+  secondsLeft = secondsLeft % 3600;
+  const minutes = Math.floor(secondsLeft / 60);
+  const seconds = secondsLeft % 60;
+  
+  // display result in browser console
+  console.log(`${sum} seconds`);
+  console.log(`${hours} hours ${minutes} minutes ${seconds} seconds`);
 </script>
 </body>
 </html>
