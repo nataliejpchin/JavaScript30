@@ -55,6 +55,24 @@
 
 <script>
 
+  // get a reference to the navbar
+  const nav = document.querySelector('#main');
+  console.dir(nav);
+
+  // on pageload, grab top position of nav
+  const topOfNav = nav.offsetTop;
+
+  function fixNav() {
+    if(window.scrollY >= topOfNav) {
+      // remove jerky jump
+      document.body.style.paddingTop = nav.offsetHeight + 'px';
+      document.body.classList.add('fixed-nav');
+    } else {
+      document.body.classList.remove('fixed-nav');
+    }
+  }
+
+  window.addEventListener('scroll', fixNav);
 </script>
 
 </body>
