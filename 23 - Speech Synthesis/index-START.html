@@ -35,6 +35,56 @@
   const options = document.querySelectorAll('[type="range"], [name="text"]');
   const speakButton = document.querySelector('#speak');
   const stopButton = document.querySelector('#stop');
+
+  // on page load, set the default voice message to be the same as the message in the text area
+  msg.text = document.querySelector('[name="text"]').value;
+
+  // populate voice options on dropdown
+  function populateVoices() {
+    voices = this.getVoices();
+    console.log(voices);
+    voicesDropdown.innerHTML = voices
+      .filter(voice => voice.lang.includes('en'))
+      .map(voice => `<option value="${voice.name}">${voice.name} (${voice.lang})</option>`)
+      .join('');
+  }
+
+  function setVoice() {
+    // loop to find the voice name attribute that is the same as the option name selected
+    msg.voice = voices.find(voice => voice.name === this.value);
+    toggle();
+  }
+
+  // when voice option change, stop the current voice from speaking and play the new selected voice
+  function toggle(startOver = true){
+    // stop from speaking
+    speechSynthesis.cancel();
+
+    if(startOver) {
+      // start speaking
+      speechSynthesis.speak(msg);
+    }
+  }
+
+// set voice to be the selected option
+  function setOption(){
+    console.log(this.name, this.value)
+    console.dir(msg);
+    msg[this.name] = this.value;
+    toggle();
+  }
+
+  speechSynthesis.addEventListener('voiceschanged', populateVoices);
+  voicesDropdown.addEventListener('change', setVoice);
+
+  // listen for changes in slider options
+  options.forEach(option => option.addEventListener('change', setOption));
+
+  // listen to click event on speak button
+  speakButton.addEventListener('click', toggle);
+  
+  // listen to click event on stop button
+  stopButton.addEventListener('click', () => toggle(false));
 </script>
 
 </body>
