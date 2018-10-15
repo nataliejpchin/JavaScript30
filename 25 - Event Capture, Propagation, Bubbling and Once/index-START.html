@@ -37,9 +37,37 @@
   }
 </style>
 
-<button></button>
+<button>Click me</button>
 <script>
+  // get reference to all divs
+  const divs = document.querySelectorAll('div');
 
+  // showing event bubbling
+  function logText(e) {
+    console.log(this.classList.value);
+    // console.log(this);
+    
+    // stop event bubbling
+    // e.stopPropagation();
+  }
+
+  // document.body.addEventListener('click', logText);
+
+  divs.forEach(div => div.addEventListener('click', logText, {
+    capture: false,
+    once: true
+  }));
+
+  // showing event capture
+  // divs.forEach(div => div.addEventListener('click', logText, {capture: true}));
+
+  // once example
+  const button = document.querySelector('button');
+  button.addEventListener('click', () => {
+    console.log('Click!!!');
+  }, {
+    once: true
+  });
 </script>
 </body>
 </html>
