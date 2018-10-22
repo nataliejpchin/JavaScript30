@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Click and Drag</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="items">
     <div class="item item1">01</div>
@@ -34,8 +36,72 @@
     <div class="item item25">25</div>
   </div>
 
-<script>
-</script>
+  <script>
+    // get reference to container for all items
+    const slider = document.querySelector('.items');
 
-  </body>
+    // flag
+    let isDown = false;
+
+    let startX;
+    let scrollLeft;
+
+    // listen for events
+    slider.addEventListener('mousedown', (e) => {
+      // set flag to true
+      isDown = true;
+
+      // add class to slider
+      slider.classList.add('active');
+
+      // capture the position at the time of initial click
+      // position click inside on slider, not on the page
+      // mouse down position on page minus margins
+      startX = e.pageX - slider.offsetLeft;
+      // console.log(startX);
+
+      // console.dir(slider);
+      // distance the slider has scrolled to the left
+      scrollLeft = slider.scrollLeft;
+    });
+
+    slider.addEventListener('mouseleave', () => {
+      isDown = false;
+      slider.classList.remove('active');
+    });
+
+    slider.addEventListener('mouseup', () => {
+      isDown = false;
+      slider.classList.remove('active');
+    });
+
+    // listen for when mouse is down and moving
+    slider.addEventListener('mousemove', (e) => {
+      // stop the function from running
+      // function runs when mouse moves even when the mouse is not pressed down
+      if (!isDown) return;
+
+      // console.count(isDown);
+      // console.log(startX);
+
+      // stop any selecting of text
+      e.preventDefault();
+
+      // where the cursor is when they move to the left or right
+      // calculate position every single time when mouse is moved
+      const x = e.pageX - slider.offsetLeft;
+      console.log({ x, startX });
+
+      // how far we deviated from initial position
+      const walk = x - startX;
+      console.log(walk);
+
+      // update slider position from previous position of slider
+      // to prevent recalculating scroll left everytime mouse is moved
+      slider.scrollLeft = scrollLeft - walk;
+    });
+  </script>
+
+</body>
+
 </html>
