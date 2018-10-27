@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Video Speed Scrubber</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <div class="wrapper">
@@ -14,7 +16,44 @@
     </div>
   </div>
 
-<script>
-</script>
+  <script>
+    // get reference
+    const speed = document.querySelector('.speed');
+    const bar = speed.querySelector('.speed-bar');
+    const video = document.querySelector('.flex');
+
+    /** update visual height of bar when mouseover **/
+    speed.addEventListener('mousemove', function (e) {
+      // get position of mouse inside bar
+      const y = e.pageY - this.offsetTop;
+      console.log(y);
+
+      // convert position into percentage
+      const percent = y / this.offsetHeight;
+      console.log(percent);
+
+
+      const height = Math.round(percent * 100) + '%';
+      console.log(height);
+      bar.style.setProperty('height', height);
+
+      // update label, rounded up to 2 decimal points
+      // want the min playback rate to be 0.4
+      // and the max playback rate to be 4
+      // max-min = 3.6
+      // 0 * 3.6 + 0.4 = 0.4
+      // 100 * 3.6 + 0.4 = 4
+      const min = 0.4;
+      const max = 4;
+      const playbackRate = percent * (max - min) + min;
+      bar.textContent = playbackRate.toFixed(2) + 'x';
+
+      // make the video play at the playback rate chosen
+      video.playbackRate = playbackRate;
+
+    });
+
+  </script>
 </body>
+
 </html>
