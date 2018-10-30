@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Whack A Mole!</title>
   <link href='https://fonts.googleapis.com/css?family=Amatic+SC:400,700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <h1>Whack-a-mole! <span class="score">0</span></h1>
@@ -32,11 +34,86 @@
     </div>
   </div>
 
-<script>
-  const holes = document.querySelectorAll('.hole');
-  const scoreBoard = document.querySelector('.score');
-  const moles = document.querySelectorAll('.mole');
+  <script>
+    const holes = document.querySelectorAll('.hole');
+    const scoreBoard = document.querySelector('.score');
+    const moles = document.querySelectorAll('.mole');
 
-</script>
+    let lastHole;
+    let timeUp = false;
+    let score = 0;
+
+    // random amount of time to pop up for
+    function randomTime(min, max) {
+      return Math.round(Math.random() * (max - min) + min);
+    }
+
+    // random hole to pop up at
+    function randomHole(holes) {
+      // randomizing hole number
+      const idx = Math.floor(Math.random() * holes.length);
+      const hole = holes[idx];
+
+      // prevent getting the same hole number
+      if (hole === lastHole) {
+        console.log('Boo - that is the same hole');
+        return randomHole(holes);
+      }
+
+      // store hole number
+      lastHole = hole;
+      return hole;
+    }
+
+    // get the moles to pop up
+    function peep() {
+      // in milliseconds
+      const time = randomTime(200, 1000);
+      const hole = randomHole(holes);
+      console.log({ time, hole });
+
+      // add class
+      hole.classList.add('up');
+
+      // remove class after random time
+      setTimeout(() => {
+        hole.classList.remove('up');
+        // pop up other moles after times up
+        if (!timeUp) peep();
+      }, time)
+    }
+
+    function startGame() {
+      // reset scoreboard
+      scoreBoard.textContent = 0;
+
+      // set variables to default
+      timeUp = false;
+      score = 0;
+
+      // run game
+      peep();
+
+      // stop game
+      setTimeout(() => timeUp = true, 10000);
+    }
+
+    // add score
+    function bonk(e) {
+      console.log(e);
+
+      // stop fake click without mouse
+      if (!e.isTrusted) return;
+
+      score++;
+
+      // hide the mole when clicked
+      this.classList.remove('up');
+      scoreBoard.textContent = score;
+    }
+
+    moles.forEach(mole => mole.addEventListener('click', bonk));
+  </script>
 </body>
+
 </html>
