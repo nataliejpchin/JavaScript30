@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Scoped CSS Variables and JS</title>
 </head>
+
 <body>
-  <h2>Update CSS Variables with <span class='hl'>JS</span></h2>
+  <h2>Update CSS Variables with
+    <span class='hl'>JS</span>
+  </h2>
 
   <div class="controls">
     <label for="spacing">Spacing:</label>
@@ -21,6 +25,22 @@
   <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
 
   <style>
+    /* CSS variables */
+    :root {
+      --base: #ffc600;
+      --spacing: 10px;
+      --blur: 10px;
+    }
+
+    img {
+      padding: var(--spacing);
+      background: var(--base);
+      filter: blur(var(--blur));
+    }
+
+    .hl {
+      color: var(--base);
+    }
 
     /*
       misc styles, nothing to do with CSS variables
@@ -40,12 +60,42 @@
     }
 
     input {
-      width:100px;
+      width: 100px;
     }
   </style>
 
   <script>
+    // select all three inputs on the page
+    const input = document.querySelectorAll('.controls input');
+    // returns nodelist, not an array
+    console.log(input);
+
+    // update CSS variables when handle is moved
+    function handleUpdate() {
+      // console.dir(this.value);
+      // console.log(this.dataset);
+
+      const suffix = this.dataset.sizing || '';
+      // console.log(suffix);
+
+      // console.log(this.name);
+      document.documentElement.style.setProperty(
+        `--${this.name}`, this.value + suffix);
+    }
+
+    // listen for a change event
+    input.forEach((input) => input.addEventListener('change', handleUpdate));
+    // listen for a mousemove event for when mouse is moving the value
+    input.forEach(input => input.addEventListener('mousemove', handleUpdate));
   </script>
 
 </body>
+
 </html>
+
+<!--
+  1. Define CSS variables
+    CSS variables need to be declared on some sort of element
+
+  2. write Javascript to update CSS variables
+ -->
